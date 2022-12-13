@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import Head from "../components/Head"
+import Modal from "../components/Modal"
 
 const optionSubjectData = [
   {
@@ -55,17 +57,33 @@ const optionSubjectData = [
 ]
 
 function Submit() {
+  const [openModal, setOpenModal] = useState(false)
+  const [userData, setUserData] = useState({})
+
   const {
     register,
     formState: { errors },
     handleSubmit
   } = useForm()
 
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = (data) => {
+    setOpenModal(true)
+    setUserData(data)
+  }
+
+  const handleSubmitData = () => {
+    setOpenModal(false)
+    console.log(userData)
+  }
 
   return (
     <>
       <Head />
+      <Modal
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        handleSubmitData={handleSubmitData}
+      />
       <section className="bg-dark min-h-screen px-6 py-10 md:p-28 text-light font-poppins">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-16">
