@@ -17,7 +17,7 @@ export default function Home() {
               Selamat datang!
             </h1>
             <h2 className="text-lg text-center">
-              Portal pemilihan jurusan SMAN 10 Surabaya Tahun Pelajaran
+              Portal pemilihan mapel peminatan SMAN 10 Surabaya Tahun Pelajaran
               2022/2023{" "}
             </h2>
           </div>
