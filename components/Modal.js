@@ -1,8 +1,14 @@
 import { Fragment, useRef } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
+import ReactLoading from "react-loading"
 
-export default function Modal({ openModal, setOpenModal, handleSubmitData }) {
+export default function Modal({
+  openModal,
+  setOpenModal,
+  handleSubmitData,
+  isLoading
+}) {
   const cancelButtonRef = useRef(null)
 
   return (
@@ -66,7 +72,19 @@ export default function Modal({ openModal, setOpenModal, handleSubmitData }) {
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-secondary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-secondary/80 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                     onClick={() => handleSubmitData()}
                   >
-                    Kirim Data
+                    {isLoading ? (
+                      <>
+                        <ReactLoading
+                          type="spin"
+                          color="#ffffff"
+                          height={20}
+                          width={20}
+                        />
+                        <span className="ml-2">Loading</span>
+                      </>
+                    ) : (
+                      <span>Kirim Data</span>
+                    )}
                   </button>
                   <button
                     type="button"

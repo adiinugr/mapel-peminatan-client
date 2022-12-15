@@ -1,7 +1,18 @@
 import Link from "next/link"
 import Head from "../../components/Head"
+import { fetchAPI } from "../../lib/api"
 
-function StatusDinamic() {
+function StatusDinamic({ studentSubject }) {
+  const {
+    name,
+    nis,
+    classroom,
+    email,
+    subject_option: {
+      data: { attributes: subject }
+    }
+  } = studentSubject.attributes
+
   return (
     <>
       <Head />
@@ -22,42 +33,71 @@ function StatusDinamic() {
                 <tbody className="text-light">
                   <tr>
                     <td className="w-1/3 text-left py-2">Nama Lengkap</td>
-                    <td className="w-1/3 text-left py-2">: Adi Nugroho</td>
+                    <td className="w-1/3 text-left py-2">: {name}</td>
                   </tr>
                   <tr>
                     <td className="w-1/3 text-left py-2">NIS</td>
-                    <td className="w-1/3 text-left py-2">: 20192</td>
+                    <td className="w-1/3 text-left py-2">: {nis}</td>
                   </tr>
                   <tr>
                     <td className="w-1/3 text-left py-2">Kelas</td>
-                    <td className="w-1/3 text-left py-2">: X-A</td>
+                    <td className="w-1/3 text-left py-2">: {classroom}</td>
                   </tr>
                   <tr>
                     <td className="w-1/3 text-left py-2">Email</td>
-                    <td className="w-1/3 text-left py-2">
-                      : adi@sma10sby.sch.id
-                    </td>
+                    <td className="w-1/3 text-left py-2">: {email}</td>
                   </tr>
                   <tr>
                     <td className="text-left py-2 flex w-full">
                       Mapel yang dipilih
                     </td>
                     <td className="w-1/3 text-left py-2">
-                      : Paket Mapel 1 (Matematika, Informatika, Sejarah,
-                      Ekonomi)
+                      {`: ${subject.name} (${subject.subject1}, ${subject.subject2}, ${subject.subject3},
+                      ${subject.subject4})`}
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
-          <button className="bg-secondary px-6 py-2 rounded-md text-white font-semibold self-end">
-            <Link href="/">Home</Link>
-          </button>
+          <Link className="self-end" href="/">
+            <button className="bg-secondary px-6 py-2 rounded-md text-white font-semibold">
+              Home
+            </button>
+          </Link>
         </div>
       </section>
     </>
   )
+}
+
+export async function getStaticPaths() {
+  const studentSubjectsRes = await fetchAPI("/student-subjects", {
+    fields: ["nis"]
+  })
+
+  return {
+    paths: studentSubjectsRes.data.map((studentSubjects) => ({
+      params: {
+        nis: studentSubjects.attributes.nis.toString()
+      }
+    })),
+    fallback: false
+  }
+}
+
+export async function getStaticProps({ params }) {
+  const matchingStudentSubjects = await fetchAPI("/student-subjects", {
+    filters: { nis: params.nis },
+    populate: "*"
+  })
+
+  return {
+    props: {
+      studentSubject: matchingStudentSubjects.data[0]
+    },
+    revalidate: 1
+  }
 }
 
 export default StatusDinamic

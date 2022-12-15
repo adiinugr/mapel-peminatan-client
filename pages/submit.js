@@ -1,64 +1,23 @@
 import { useState } from "react"
+import { useRouter } from "next/router"
 import { useForm } from "react-hook-form"
+import { toast, ToastContainer } from "react-toastify"
+
+import { fetchAPI } from "../lib/api"
+
 import Head from "../components/Head"
 import Modal from "../components/Modal"
 
-const optionSubjectData = [
-  {
-    id: 1,
-    code: "paket-mapel-1",
-    name: "Paket Mapel 1",
-    subject1: "Matematika Tk Lanjut",
-    subject2: "Biologi",
-    subject3: "Kimia",
-    subject4: "Fisika",
-    quota: 60
-  },
-  {
-    id: 2,
-    code: "paket-mapel-2",
-    name: "Paket Mapel 2",
-    subject1: "Matematika Tk Lanjut",
-    subject2: "Kimia",
-    subject3: "Bahasa Inggris Tk Lanjut",
-    subject4: "Ekonomi",
-    quota: 80
-  },
-  {
-    id: 3,
-    code: "paket-mapel-3",
-    name: "Paket Mapel 3",
-    subject1: "Biologi",
-    subject2: "Fisika",
-    subject3: "Ekonomi",
-    subject4: "Sosiologi",
-    quota: 70
-  },
-  {
-    id: 4,
-    code: "paket-mapel-4",
-    name: "Paket Mapel 4",
-    subject1: "Fisika",
-    subject2: "Bahasa Inggris Tk Lanjut",
-    subject3: "Bahasa Indonesia Tk Lanjut",
-    subject4: "Ekonomi",
-    quota: 36
-  },
-  {
-    id: 5,
-    code: "paket-mapel-5",
-    name: "Paket Mapel 5",
-    subject1: "Biologi",
-    subject2: "Fisika",
-    subject3: "Bahasa Indonesia Tk Lanjut",
-    subject4: "Geografi",
-    quota: 36
-  }
-]
+import "react-toastify/dist/ReactToastify.css"
+import Link from "next/link"
 
-function Submit() {
+function Submit({ subjectOptions }) {
   const [openModal, setOpenModal] = useState(false)
   const [userData, setUserData] = useState({})
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const router = useRouter()
 
   const {
     register,
@@ -71,20 +30,81 @@ function Submit() {
     setUserData(data)
   }
 
-  const handleSubmitData = () => {
+  const handleSubmitData = async () => {
     setOpenModal(false)
-    console.log(userData)
+    setIsLoading(true)
+
+    const { nis, name, email, classroom, subjectOption } = userData
+
+    try {
+      const matchingSubjectOption = await fetchAPI("/subject-options", {
+        filters: { code: subjectOption }
+      })
+
+      const matchingStudentSubject = await fetchAPI("/student-subjects", {
+        filters: { nis }
+      })
+
+      if (matchingStudentSubject.data.length > 0) {
+        toast.error("NIS yang kamu masukkan sudah terdaftar!")
+        setIsLoading(false)
+
+        return
+      }
+
+      const postDataRes = await fetchAPI("/student-subjects", null, {
+        method: "POST",
+        body: JSON.stringify({
+          data: {
+            nis,
+            name,
+            email,
+            classroom,
+            subject_option: matchingSubjectOption.data[0].id
+          }
+        })
+      })
+
+      setIsLoading(false)
+
+      toast.success("Berhasil submit data")
+
+      setTimeout(() => {
+        router.push("/")
+      }, 3000)
+    } catch (error) {
+      setIsLoading(false)
+      toast.error("Gagal submit data. Silakan coba lagi!")
+    }
   }
 
   return (
     <>
       <Head />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Modal
         openModal={openModal}
         setOpenModal={setOpenModal}
         handleSubmitData={handleSubmitData}
+        isLoading={isLoading}
       />
       <section className="bg-dark min-h-screen px-6 py-10 md:p-28 text-light font-poppins">
+        <Link className="grid place-content-end" href="/">
+          <button className="bg-secondary px-5 py-2 rounded-md text-white font-semibold mb-6">
+            Home
+          </button>
+        </Link>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-16">
             <h2 className="text-xl font-semibold mb-2">Bagian 1</h2>
@@ -92,37 +112,58 @@ function Submit() {
             {errors.subjectOption?.type === "required" && (
               <p className="text-red-500 mb-2">Paket mapel harus dipilih!</p>
             )}
-            <ul className="grid gap-6 w-full md:grid-cols-3">
-              {optionSubjectData.map((option) => (
+            <ul className="grid gap-6 w-full sm:grid-cols-2 xl:grid-cols-3">
+              {subjectOptions.map((option) => (
                 <li key={option.id}>
                   <input
                     {...register("subjectOption", { required: true })}
                     type="radio"
-                    id={option.code}
-                    value={option.code}
+                    id={option.attributes.code}
+                    value={option.attributes.code}
                     className="hidden peer"
+                    disabled={
+                      option.attributes.quota ==
+                      option.attributes.student_subjects.data.length
+                    }
                   />
                   <label
-                    htmlFor={option.code}
-                    className="inline-flex justify-between items-center p-8 w-full text-light bg-primary rounded-lg cursor-pointer peer-checked:border-2 peer-checked:border-white peer-checked:text-blue-600 peer-checked:bg-primary/60 hover:bg-primary/60"
+                    htmlFor={option.attributes.code}
+                    className={`inline-flex justify-between items-center p-8 w-full text-light ${
+                      option.attributes.quota ==
+                      option.attributes.student_subjects.data.length
+                        ? "bg-gray-700 cursor-not-allowed"
+                        : "bg-primary hover:bg-primary/60"
+                    } rounded-lg cursor-pointer peer-checked:border-2 peer-checked:border-white peer-checked:text-blue-600 peer-checked:bg-primary/60`}
                   >
                     <div className="block text-light w-full">
                       <p className="w-full text-lg font-semibold mb-6">
-                        {option.name}
+                        {option.attributes.name}
                       </p>
-                      <p className="w-full">{option.subject1}</p>
-                      <p className="w-full">{option.subject2}</p>
-                      <p className="w-full">{option.subject3}</p>
-                      <p className="w-full">{option.subject4}</p>
+                      <p className="w-full">{option.attributes.subject1}</p>
+                      <p className="w-full">{option.attributes.subject2}</p>
+                      <p className="w-full">{option.attributes.subject3}</p>
+                      <p className="w-full">{option.attributes.subject4}</p>
 
                       <div className="flex mt-6 justify-between w-full font-semibold">
                         <div className="flex mr-10">
-                          <p className="mr-6">Kuota</p>
-                          <p>{option.quota}</p>
+                          <p className="mr-5">Kuota</p>
+                          <p>{`: ${option.attributes.quota}`}</p>
                         </div>
                         <div className="flex">
-                          <p className="mr-6">Terisi</p>
-                          <p>24</p>
+                          <p className="mr-5">Terisi</p>
+                          <p
+                            className={
+                              option.attributes.quota ==
+                              option.attributes.student_subjects.data.length
+                                ? "text-red-400"
+                                : ""
+                            }
+                          >
+                            {option.attributes.quota ==
+                            option.attributes.student_subjects.data.length
+                              ? `: ${option.attributes.student_subjects.data.length} (full)`
+                              : `: ${option.attributes.student_subjects.data.length}`}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -253,6 +294,20 @@ function Submit() {
       </section>
     </>
   )
+}
+
+export async function getStaticProps() {
+  const subjectOptionsRes = await fetchAPI("/subject-options", {
+    populate: "*",
+    sort: ["code"]
+  })
+
+  return {
+    props: {
+      subjectOptions: subjectOptionsRes.data
+    },
+    revalidate: 1
+  }
 }
 
 export default Submit

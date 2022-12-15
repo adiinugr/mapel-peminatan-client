@@ -26,18 +26,20 @@ export default function Home() {
           <div className="bg-primary p-8 rounded-xl flex flex-col justify-between items-center max-w-lg">
             <div>
               <p className="text-xl font-semibold mb-3">
-                Belum memilih mapel peminatan!
+                Sudah memilih mapel peminatan!
               </p>
               <p>Lihat statusmu melalui link di bawah ini!</p>
             </div>
-            <button className="bg-secondary px-5 py-2 rounded-md self-end text-white font-semibold">
-              <Link href="/status">Lihat Status</Link>
-            </button>
+            <Link className="self-end" href="/status">
+              <button className="bg-secondary px-5 py-2 rounded-md text-white font-semibold">
+                Lihat Status
+              </button>
+            </Link>
           </div>
           <div className="bg-primary p-8 rounded-xl flex flex-col justify-between items-center max-w-lg">
             <div>
               <p className="text-xl font-semibold mb-3">
-                Sudah memilih mapel peminatan!
+                Belum memilih mapel peminatan!
               </p>
               <p>
                 {" "}
@@ -45,9 +47,12 @@ export default function Home() {
                 Setiap mapel mempunyai kuota yang terbatas.
               </p>
             </div>
-            <button className="bg-secondary px-5 py-2 rounded-md self-end text-white font-semibold">
-              <Link href="/submit">Pilih Mapel</Link>
-            </button>
+
+            <Link className="self-end" href="/submit">
+              <button className="bg-secondary px-5 py-2 rounded-md text-white font-semibold">
+                Pilih Mapel
+              </button>
+            </Link>
           </div>
         </div>
       </section>
