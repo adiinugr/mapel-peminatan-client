@@ -13,6 +13,8 @@ function CustomHead() {
         name="description"
         content="Portal pemilihan mata pelajaran peminatan siswa SMAN 10 Surabaya Tahun Pelajaran 2022/2023"
       />
+      <meta property="og:image" content="meta-image.png"></meta>
+      <link rel="icon" type="image/x-icon" href="/favicon.ico"></link>
     </Head>
   )
 }
