@@ -68,11 +68,17 @@ function Status({deadline}) {
 export async function getStaticProps() {
   const countdown = await fetchAPI("/countdown")
 
-  return {
-    props: {
-      deadline: countdown.data.attributes.deadline
-    },
-    revalidate: 1
+  if (countdown.data ===null) {
+    return {}
+  } else {
+
+    
+    return {
+      props: {
+        deadline: countdown.data.attributes.deadline
+      },
+      revalidate: 1
+    }
   }
 }
 
