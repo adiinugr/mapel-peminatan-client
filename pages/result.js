@@ -144,7 +144,7 @@ function ResultComponent({ studentSubject }) {
     <>
       <Head />
       <section className="relative px-6 py-10 bg-dark h-screen flex flex-col items-center justify-center text-light font-poppins">
-        <Lavel/>
+        <Label/>
         <div className="max-w-xl text-center mb-10">
           <p className="text-3xl font-semibold mb-4">
            Data Pemilihan Mapel Peminatan
