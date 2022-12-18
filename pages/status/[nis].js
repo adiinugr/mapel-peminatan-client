@@ -1,6 +1,9 @@
 import Link from "next/link"
-import Head from "../../components/Head"
 import { fetchAPI } from "../../lib/api"
+
+import Head from "../../components/Head"
+import Label from "../../components/Label"
+
 
 function StatusDinamic({ studentSubject }) {
   const {
@@ -16,7 +19,8 @@ function StatusDinamic({ studentSubject }) {
   return (
     <>
       <Head />
-      <section className="px-6 py-10 bg-dark h-screen flex flex-col items-center justify-center text-light font-poppins">
+      <section className="relative px-6 py-10 bg-dark h-screen flex flex-col items-center justify-center text-light font-poppins overflow-hidden">
+        <Label/>
         <div className="max-w-xl text-center mb-10">
           <p className="text-3xl font-semibold mb-4">
             Status pemilihan mapel peminatan!
@@ -61,7 +65,7 @@ function StatusDinamic({ studentSubject }) {
             </div>
           </div>
           <Link className="self-end" href="/">
-            <button className="bg-secondary px-6 py-2 rounded-md text-white font-semibold">
+            <button className="bg-secondary px-6 py-2 rounded-md text-white font-medium">
               Home
             </button>
           </Link>

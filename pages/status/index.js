@@ -1,9 +1,15 @@
 import { useRouter } from "next/router"
 import { useForm } from "react-hook-form"
 
-import Head from "../../components/Head"
+import {fetchAPI} from '../../lib/api'
 
-function Status() {
+
+import Head from "../../components/Head"
+import Label from "../../components/Label"
+import Countdown from "../../components/Countdown"
+
+
+function Status({deadline}) {
   const router = useRouter()
 
   const {
@@ -19,7 +25,9 @@ function Status() {
   return (
     <>
       <Head />
-      <section className="px-6 py-10 bg-dark h-screen flex flex-col items-center justify-center text-light font-poppins">
+      <section className="relative px-6 pb-10 pt-24 xl:p-23 bg-dark h-screen flex flex-col items-center text-light font-poppins overflow-hidden">
+        <Label/>
+        <Countdown deadlineDate={deadline} />
         <div className="max-w-xl text-center mb-10">
           <p className="text-3xl font-semibold mb-4">
             Lihat status pemilihan mapel peminatan!
@@ -46,7 +54,7 @@ function Status() {
             </div>
             <button
               type="submit"
-              className="bg-secondary px-5 py-2 rounded-md text-white font-semibold mt-8 ml-auto"
+              className="bg-secondary px-5 py-2 rounded-md text-white font-medium mt-8 ml-auto"
             >
               Cek Status
             </button>
@@ -56,5 +64,17 @@ function Status() {
     </>
   )
 }
+
+export async function getStaticProps() {
+  const countdown = await fetchAPI("/countdown")
+
+  return {
+    props: {
+      deadline: countdown.data.attributes.deadline
+    },
+    revalidate: 1
+  }
+}
+
 
 export default Status

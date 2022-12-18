@@ -1,11 +1,21 @@
 import Link from "next/link"
-import Head from "../components/Head"
 
-export default function Home() {
+import {fetchAPI} from '../lib/api'
+
+import Head from "../components/Head"
+import Label from "../components/Label"
+import Countdown from "../components/Countdown"
+
+ function Home({deadline}) {
   return (
     <>
       <Head />
-      <section className="px-6 py-10 bg-dark min-h-screen flex flex-col items-center justify-center text-light font-poppins">
+
+      <section className="relative overflow-hidden px-6 pb-10 pt-24 xl:py-10 bg-dark min-h-screen flex flex-col items-center justify-center text-light font-poppins">
+        <Label />
+        <Countdown deadlineDate={deadline} />
+
+
         <div className="flex flex-col md:flex-row items-center gap-6 mb-10">
           <img
             className="h-28 w-28"
@@ -31,7 +41,7 @@ export default function Home() {
               <p>Lihat statusmu melalui link di bawah ini!</p>
             </div>
             <Link className="self-end" href="/status">
-              <button className="bg-secondary px-5 py-2 rounded-md text-white font-semibold">
+              <button className="bg-secondary px-5 py-2 rounded-md text-white font-medium">
                 Lihat Status
               </button>
             </Link>
@@ -49,7 +59,7 @@ export default function Home() {
             </div>
 
             <Link className="self-end" href="/submit">
-              <button className="bg-secondary px-5 py-2 rounded-md text-white font-semibold">
+              <button className="bg-secondary px-5 py-2 rounded-md text-white font-medium">
                 Pilih Mapel
               </button>
             </Link>
@@ -59,3 +69,16 @@ export default function Home() {
     </>
   )
 }
+
+export async function getStaticProps() {
+  const countdown = await fetchAPI("/countdown")
+
+  return {
+    props: {
+      deadline: countdown.data.attributes.deadline
+    },
+    revalidate: 1
+  }
+}
+
+export default Home

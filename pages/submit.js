@@ -2,16 +2,19 @@ import { useState } from "react"
 import { useRouter } from "next/router"
 import { useForm } from "react-hook-form"
 import { toast, ToastContainer } from "react-toastify"
+import Link from "next/link"
 
 import { fetchAPI } from "../lib/api"
 
 import Head from "../components/Head"
 import Modal from "../components/Modal"
+import Label from "../components/Label"
+import Countdown from "../components/Countdown"
+
 
 import "react-toastify/dist/ReactToastify.css"
-import Link from "next/link"
 
-function Submit({ subjectOptions }) {
+function Submit({ subjectOptions ,deadline}) {
   const [openModal, setOpenModal] = useState(false)
   const [userData, setUserData] = useState({})
 
@@ -99,9 +102,12 @@ function Submit({ subjectOptions }) {
         handleSubmitData={handleSubmitData}
         isLoading={isLoading}
       />
-      <section className="bg-dark min-h-screen px-6 py-10 md:p-28 text-light font-poppins">
-        <Link className="grid place-content-end" href="/">
-          <button className="bg-secondary px-5 py-2 rounded-md text-white font-semibold mb-6">
+      <section className="relative bg-dark min-h-screen px-6 pb-10 pt-24 xl:p-32 text-light font-poppins overflow-hidden flex flex-col items-center justify-center">
+         <Label/>
+          <Countdown deadlineDate={deadline} />
+
+        <Link className="block ml-auto" href="/">
+          <button className="bg-secondary px-5 py-2 rounded-md text-white font-medium mb-6">
             Home
           </button>
         </Link>
@@ -285,7 +291,7 @@ function Submit({ subjectOptions }) {
               ></textarea>
               <input
                 type="submit"
-                className="bg-secondary px-6 py-3 rounded-md text-white font-semibold mt-16 cursor-pointer hover:bg-secondary/95"
+                className="bg-secondary px-6 py-3 rounded-md text-white font-medium mt-16 cursor-pointer hover:bg-secondary/95"
                 value="Submit Data"
               />
             </div>
@@ -302,9 +308,12 @@ export async function getStaticProps() {
     sort: ["code"]
   })
 
+   const countdown = await fetchAPI("/countdown")
+
   return {
     props: {
-      subjectOptions: subjectOptionsRes.data
+      subjectOptions: subjectOptionsRes.data,
+       deadline: countdown.data.attributes.deadline
     },
     revalidate: 1
   }

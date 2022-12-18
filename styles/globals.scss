@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+
+@tailwind utilities;
+
+$border-color: green;
+$body-color: #170F3C;
+$primary: red;
+$white: white;
+
+
+
+
+.rdt_TableHead {
+  .rdt_TableHeadRow {
+    background-color: #F8AE2D;
+    border-top: 1px solid;
+    min-height: 0;
+
+    .rdt_TableCol {
+      padding: 0.72rem 1.5rem;
+      .rdt_TableCol_Sortable {
+        color: $body-color;
+        font-weight: bold;
+        font-style: 0.857rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        &:hover {
+          opacity: 1;
+        }
+        span {
+          margin-left: 0.35rem;
+        }
+      }
+      &:first-child {
+        .form-check {
+          transform: translateX(-10px);
+        }
+      }
+    }
+  }
+}
+
+.rdt_TableBody {
+  .rdt_TableRow {
+    color: $body-color;
+
+    .rdt_TableCell {
+      height: 53px;
+      padding: 0.72rem 1.5rem;
+
+      
+    }
+  }
+}
+
+
+
+
