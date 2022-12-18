@@ -68,19 +68,17 @@ function Status({deadline}) {
 export async function getStaticProps() {
   const countdown = await fetchAPI("/countdown")
 
-  if (countdown.data ===null) {
-    return {}
-  } else {
+
 
     
     return {
       props: {
-        deadline: countdown.data.attributes.deadline
+        deadline: countdown.data ==null ? {} :countdown.data.attributes.deadline
       },
       revalidate: 1
     }
   }
-}
+
 
 
 export default Status
